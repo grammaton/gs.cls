@@ -1,11 +1,11 @@
-%% appunti.cls
+%% gs.cls
 %% Classe LaTeX personalizzata per appunti con supporto greco e Alegreya
-%% 
+%%
 %% Versione: 1.0
 %% Compilazione richiesta: XeLaTeX
 
 \NeedsTeXFormat{LaTeX2e}
-\ProvidesClass{appunti}[2025/07/22 v1.0 Classe personalizzata per appunti]
+\ProvidesClass{gs}[2025/07/22 v1.0 Classe personalizzata per appunti]
 
 % Opzioni della classe
 \DeclareOption*{\PassOptionsToClass{\CurrentOption}{article}}
@@ -19,7 +19,7 @@
 \ifXeTeX
     % Tutto ok, procediamo
 \else
-    \ClassError{appunti}{%
+    \ClassError{gs}{%
         Questa classe richiede XeLaTeX per funzionare correttamente.%
     }{%
         Compila il documento usando XeLaTeX invece di pdfLaTeX o LaTeX.%
@@ -79,10 +79,24 @@
 \RequirePackage{amsfonts}
 \RequirePackage{amssymb}
 \RequirePackage{graphicx}
-\RequirePackage{xcolor}
 \RequirePackage{hyperref}
 
 %% === CONFIGURAZIONE HYPERREF ===
+% Definizione di comandi per metadati personalizzati
+\newcommand{\subtitle}[1]{\def\@subtitle{#1}}
+\newcommand{\@subtitle}{}
+
+\newcommand{\kuno}[1]{\def\@kuno{#1}}
+\newcommand{\@kuno}{}
+\newcommand{\kdue}[1]{\def\@kdue{#1}}
+\newcommand{\@kdue}{}
+\newcommand{\ktre}[1]{\def\@ktre{#1}}
+\newcommand{\@ktre}{}
+\newcommand{\kquattro}[1]{\def\@kquattro{#1}}
+\newcommand{\@kquattro}{}
+\newcommand{\kcinque}[1]{\def\@kcinque{#1}}
+\newcommand{\@kcinque}{}
+
 % Configurazione automatica dei metadati PDF
 \AtBeginDocument{%
     \hypersetup{
@@ -91,11 +105,38 @@
         bookmarksopen=true,
         pdftitle={\@title},
         pdfauthor={\@author},
-        pdfsubject={Appunti di filosofia},
-        pdfkeywords={filosofia, appunti, greco},
-        pdfcreator={XeLaTeX con classe appunti},
-        pdfproducer={LaTeX}
+        pdfsubject={\@subtitle},
+        pdfkeywords={\@kuno, \@kdue, \@ktre, \@kquattro, \@kcinque},
+        pdfcreator={XeLaTeX con classe gs},
+        pdfproducer={XeLaTeX}
     }
+}
+
+%% === PERSONALIZZAZIONE MAKETITLE ===
+% Ridefinizione di \maketitle per includere il sottotitolo
+\renewcommand{\maketitle}{%
+    \thispagestyle{plain}% Forza lo stile plain per la prima pagina
+    \begin{center}
+        % Titolo principale
+        {\LARGE\bfseries\sffamily \@title \par}
+
+        % Sottotitolo (se definito)
+        \ifx\@subtitle\@empty
+        \else
+            \vspace{0.3cm}
+            {\large\itshape \@subtitle \par}
+        \fi
+
+        \vspace{0.5cm}
+
+        % Autore
+        {\normalsize \@author \par}
+
+        % Data
+        {\normalsize \@date \par}
+
+    \end{center}
+    \vspace{1cm}
 }
 
 %% === COMANDI PERSONALIZZATI ===
@@ -114,13 +155,13 @@
 % Ambiente per citazioni filosofiche
 \newenvironment{citazionefilosofica}[1]
 {%
-    \def\citazioneautore{#1}%
     \begin{quote}
     \itshape
+    \def\@citazioneautore{#1}%
 }{%
     \normalfont
     \begin{flushright}
-    --- \citazioneautore
+    --- \@citazioneautore
     \end{flushright}
     \end{quote}
 }
@@ -143,7 +184,7 @@
 
 \titleformat{\subsubsection}
     {\normalsize\bfseries\sffamily}
-    {\thesubsubsection.}
+    {\thesubsection.}
     {0.5em}
     {}
 
